@@ -26,16 +26,18 @@ export default function SupabaseCallback() {
       return;
     }
 
-    axios.post(
-      API.AUTH_SUPABASE_CALLBACK,
-      { code, state },
-      { withCredentials: true }
-    )
+    axios
+      .post(
+        API.AUTH_SUPABASE_CALLBACK,
+        { code, state },
+        { withCredentials: true }
+      )
       .then(() => {
         router.replace('/dashboard');
       })
       .catch((e) => {
-        toast.error('We couldn\'t sign you in. Please try again.', {
+        // eslint-disable-next-line quotes
+        toast.error("We couldn't sign you in. Please try again.", {
           duration: 3000,
         });
         console.log(e);
@@ -58,13 +60,17 @@ export default function SupabaseCallback() {
           },
           error: {
             iconTheme: {
-              primary: '#ef4444', // red-500
+              primary: '#ef4444',
               secondary: '#23272f',
             },
           },
         }}
       />
-      <ClipLoader size={48} color="var(--color-emerald-500)" aria-label="Loading" />
+      <ClipLoader
+        size={48}
+        color="var(--color-emerald-500)"
+        aria-label="Loading"
+      />
     </>
   );
 }

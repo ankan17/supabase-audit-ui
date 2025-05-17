@@ -9,7 +9,11 @@ import axios from 'axios';
 import Navbar from '../components/Navbar';
 import { API } from '../lib/constants';
 
-export default function ClientLayout({ children }: { children: React.ReactNode }) {
+export default function ClientLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -19,8 +23,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   const isPublicPage = pathname === '/' || pathname === '/auth/callback';
 
   useEffect(() => {
-    axios.get(API.AUTH_VERIFY, { withCredentials: true })
-      .then(res => setAuthenticated(res.status === 200))
+    axios
+      .get(API.AUTH_VERIFY, { withCredentials: true })
+      .then((res) => setAuthenticated(res.status === 200))
       .catch(() => setAuthenticated(false))
       .finally(() => setLoading(false));
   }, [pathname]);
@@ -38,7 +43,11 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
   if (loading) {
     return (
-      <ClipLoader size={48} color="var(--color-emerald-500)" aria-label="Loading" />
+      <ClipLoader
+        size={48}
+        color="var(--color-emerald-500)"
+        aria-label="Loading"
+      />
     );
   }
 
@@ -54,9 +63,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   return (
     <>
       <Navbar />
-      <div className="w-full h-full flex flex-col flex-1">
-        {children}
-      </div>
+      <div className="w-full h-full flex flex-col flex-1">{children}</div>
     </>
   );
 }

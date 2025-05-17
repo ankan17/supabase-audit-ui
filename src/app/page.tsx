@@ -25,7 +25,8 @@ export default function Login() {
         </a>
       </div>
       <div className="mt-6 text-xs text-slate-500 text-center">
-        We’ll never store your credentials. Authentication is used only to run compliance checks on your behalf.
+        We&apos;ll never store your credentials. Authentication is used only to
+        run compliance checks on your behalf.
       </div>
     </div>
   );
