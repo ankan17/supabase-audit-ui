@@ -15,8 +15,11 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="w-full flex items-center justify-between px-6 py-4 bg-[#18181b] shadow-sm backdrop-blur z-50 sticky top-0">
-      <a href="/dashboard" className="text-xl font-bold tracking-tight text-white select-none">
+    <nav className="w-full flex items-center justify-between px-6 py-4 bg-[#18181b] border-b border-slate-700 shadow-sm backdrop-blur z-50 sticky top-0">
+      <a
+        href="/dashboard"
+        className="text-xl font-bold tracking-tight text-white select-none"
+      >
         Supabase Audit
       </a>
       <div className="flex items-center gap-4">

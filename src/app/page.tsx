@@ -5,7 +5,7 @@ import { ShieldCheck, LogIn } from 'lucide-react';
 
 export default function Login() {
   return (
-    <div className="w-full max-w-md p-8 rounded-2xl shadow-2xl border border-slate-800 bg-[#18181b]">
+    <div className="w-full max-w-md p-8 rounded-2xl shadow-2xl border border-slate-700 bg-[#23272f]">
       <div className="flex flex-col items-center mb-6">
         <ShieldCheck className="w-12 h-12 text-emerald-400 mb-2" />
         <h1 className="text-2xl font-bold text-white mb-1">
