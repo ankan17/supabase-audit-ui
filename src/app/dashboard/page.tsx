@@ -11,10 +11,12 @@ import {
   RefreshCw,
   ShieldCheck,
   ShieldX,
+  Bot,
 } from 'lucide-react';
 
 import { API } from '../../lib/constants';
 import StatusCard from '../../components/StatusCard';
+import ChatWindow from '../../components/ChatWindow';
 import toast, { Toaster } from 'react-hot-toast';
 
 const fetcher = (url: string) =>
@@ -68,6 +70,7 @@ export default function Dashboard() {
     )[]
   >([]);
   const [showLogs, setShowLogs] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
 
   const {
     data: organisations,
@@ -299,6 +302,18 @@ export default function Dashboard() {
           </>
         )}
       </div>
+
+      {/* Floating Chat Icon */}
+      <button
+        aria-label="Open chat"
+        className="fixed bottom-6 right-6 z-50 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-lg p-4 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-indigo-400 transition cursor-pointer"
+        onClick={() => setChatOpen(true)}
+        style={{ display: chatOpen ? 'none' : 'flex' }}
+      >
+        <Bot className="w-7 h-7" />
+      </button>
+      {/* Chat Window */}
+      {chatOpen && <ChatWindow setChatOpen={setChatOpen} />}
     </div>
   );
 }
