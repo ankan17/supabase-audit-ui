@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+
 import './globals.css';
+import AuthLayout from './AuthLayout';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -25,10 +27,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gradient-to-br from-[#020617] via-[#0f172a] to-[#1e293b]`}
       >
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#020617] via-[#0f172a] to-[#1e293b]">
-          {children}
+        <div className="min-h-screen flex flex-col items-center justify-center">
+          <AuthLayout>
+            {children}
+          </AuthLayout>
         </div>
       </body>
     </html>
