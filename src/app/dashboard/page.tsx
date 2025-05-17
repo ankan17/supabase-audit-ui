@@ -131,6 +131,30 @@ export default function Dashboard() {
       );
   }, [scanResults]);
 
+  // Download logs as a .txt file
+  const handleDownloadLogs = () => {
+    if (!logs.length) return;
+    const logText = logs
+      .map((log) => {
+        const time = log.timestamp
+          ? `[${new Date(log.timestamp).toLocaleDateString()} ${new Date(log.timestamp).toLocaleTimeString()}]`
+          : '[--/--/---- --:--:--]';
+        return `${time} [${log.logGroup.toUpperCase()}] ${log.logline}`;
+      })
+      .join('\n');
+    const blob = new Blob([logText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `compliance-logs-${selectedOrg.name || 'org'}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 0);
+  };
+
   if (orgsLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -211,17 +235,25 @@ export default function Dashboard() {
             </div>
 
             <div className="mt-12">
-              <button
-                className="flex items-center gap-2 px-4 py-2 rounded-lg border border-indigo-500 bg-indigo-600 text-white font-semibold shadow-sm hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition cursor-pointer"
-                onClick={handleToggleLogs}
-              >
-                {showLogs ? (
-                  <ChevronUp className="w-4 h-4" />
-                ) : (
-                  <ChevronDown className="w-4 h-4" />
-                )}
-                {showLogs ? 'Hide Logs' : 'View Logs'}
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-indigo-500 bg-indigo-600 text-white font-semibold shadow-sm hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition cursor-pointer"
+                  onClick={handleToggleLogs}
+                >
+                  {showLogs ? (
+                    <ChevronUp className="w-4 h-4" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4" />
+                  )}
+                  {showLogs ? 'Hide Logs' : 'View Logs'}
+                </button>
+                <button
+                  className="ml-4 flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-500 bg-slate-800 text-white font-semibold shadow-sm hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 transition cursor-pointer"
+                  onClick={handleDownloadLogs}
+                >
+                  Download Logs
+                </button>
+              </div>
               {showLogs && (
                 <div className="mt-4 bg-slate-900 rounded-lg border border-slate-700 p-4 max-h-64 overflow-y-auto text-xs font-mono text-slate-200">
                   <ul>
