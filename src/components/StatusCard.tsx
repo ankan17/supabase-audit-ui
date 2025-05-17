@@ -20,12 +20,34 @@ export default function StatusCard({
   description,
 }: {
   title: string;
-  stats: Stats;
+  stats: Stats | null;
   icon: React.ReactNode;
   description: string;
 }) {
   if (!stats)
-    return <Card className="animate-pulse h-56 shadow-xl rounded-2xl" />;
+    return (
+      <Card className="animate-pulse h-56 shadow-xl rounded-2xl flex flex-col justify-between p-6 bg-[#18181b] border border-slate-700">
+        <div className="flex flex-row items-center gap-4 pb-2">
+          <div className="w-10 h-10 bg-slate-700 rounded-full animate-pulse" />
+          <div className="flex-1">
+            <div className="h-5 w-32 bg-slate-700 rounded mb-2 animate-pulse" />
+            <div className="h-3 w-48 bg-slate-700 rounded animate-pulse" />
+          </div>
+        </div>
+        <div className="pt-2">
+          <div className="flex items-center gap-4 mb-3">
+            <div className="w-6 h-6 bg-slate-700 rounded-full animate-pulse" />
+            <div className="h-6 w-12 bg-slate-700 rounded animate-pulse" />
+            <div className="h-4 w-16 bg-slate-700 rounded animate-pulse" />
+          </div>
+          <div className="flex gap-6 text-sm mt-2">
+            <div className="h-4 w-16 bg-slate-700 rounded animate-pulse" />
+            <div className="h-4 w-16 bg-slate-700 rounded animate-pulse" />
+            <div className="h-4 w-16 bg-slate-700 rounded animate-pulse" />
+          </div>
+        </div>
+      </Card>
+    );
 
   const { total, pass, fail } = stats;
   const passRate = total ? ((pass / total) * 100).toFixed(0) : '0';

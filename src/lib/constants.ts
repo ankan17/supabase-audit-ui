@@ -9,4 +9,6 @@ export const API = {
   CHECKS_MFA: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/checks/supabase/mfa`,
   CHECKS_RLS: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/checks/supabase/rls`,
   CHECKS_PITR: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/checks/supabase/pitr`,
+
+  CHAT: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/chat`,
 };

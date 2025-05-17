@@ -68,7 +68,7 @@ export default function SupabaseCallback() {
       />
       <ClipLoader
         size={48}
-        color="var(--color-emerald-500)"
+        color="var(--color-indigo-600)"
         aria-label="Loading"
       />
     </>

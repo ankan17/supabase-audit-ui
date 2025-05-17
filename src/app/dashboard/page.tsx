@@ -11,7 +11,6 @@ import {
   RefreshCw,
   ShieldCheck,
   ShieldX,
-  Bot,
 } from 'lucide-react';
 
 import { API } from '../../lib/constants';
@@ -70,7 +69,6 @@ export default function Dashboard() {
     )[]
   >([]);
   const [showLogs, setShowLogs] = useState(false);
-  const [chatOpen, setChatOpen] = useState(false);
 
   const {
     data: organisations,
@@ -87,6 +85,7 @@ export default function Dashboard() {
 
   const handleRunScan = async () => {
     setScanLoading(true);
+    await new Promise((resolve) => setTimeout(resolve, 2500));
     try {
       const settledResults = await Promise.allSettled(
         checks.map((check) =>
@@ -163,7 +162,7 @@ export default function Dashboard() {
       <div className="flex justify-center items-center h-screen">
         <ClipLoader
           size={48}
-          color="var(--color-emerald-500)"
+          color="var(--color-indigo-600)"
           aria-label="Loading..."
         />
       </div>
@@ -220,6 +219,20 @@ export default function Dashboard() {
             {scanLoading ? 'Running Scan...' : 'Run Scan'}
           </button>
         </div>
+
+        {scanLoading && (
+          <div className="grid gap-8 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 mt-12">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <StatusCard
+                key={`skeleton-${i}`}
+                title=""
+                stats={null}
+                icon={null}
+                description=""
+              />
+            ))}
+          </div>
+        )}
 
         {scanResults.length > 0 && (
           <>
@@ -302,18 +315,7 @@ export default function Dashboard() {
           </>
         )}
       </div>
-
-      {/* Floating Chat Icon */}
-      <button
-        aria-label="Open chat"
-        className="fixed bottom-6 right-6 z-50 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-lg p-4 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-indigo-400 transition cursor-pointer"
-        onClick={() => setChatOpen(true)}
-        style={{ display: chatOpen ? 'none' : 'flex' }}
-      >
-        <Bot className="w-7 h-7" />
-      </button>
-      {/* Chat Window */}
-      {chatOpen && <ChatWindow setChatOpen={setChatOpen} />}
+      <ChatWindow />
     </div>
   );
 }
