@@ -1,10 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import useSWR from 'swr';
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
-import { Loader2, RefreshCw, ShieldCheck, ShieldX } from 'lucide-react';
+import {
+  ChevronDown,
+  ChevronUp,
+  Loader2,
+  RefreshCw,
+  ShieldCheck,
+  ShieldX,
+} from 'lucide-react';
 
 import { API } from '../../lib/constants';
 import StatusCard from '../../components/StatusCard';
@@ -51,10 +58,16 @@ export default function Dashboard() {
             pass: number;
             fail: number;
           };
+          logs: {
+            timestamp: string;
+            logGroup: string;
+            logline: string;
+          }[];
         })
       | null
     )[]
   >([]);
+  const [showLogs, setShowLogs] = useState(false);
 
   const {
     data: organisations,
@@ -66,6 +79,57 @@ export default function Dashboard() {
       name: string;
     }[]
   >(API.USERS_SUPABASE_ORGANISATIONS, fetcher);
+
+  const selectedOrg = organisations?.[0] || { id: null, name: 'Not selected' };
+
+  const handleRunScan = async () => {
+    setScanLoading(true);
+    try {
+      const settledResults = await Promise.allSettled(
+        checks.map((check) =>
+          axios
+            .get(`${check.url}?orgId=${selectedOrg.id}`, {
+              withCredentials: true,
+            })
+            .then((res) => ({
+              ...check,
+              data: {
+                total: res.data.data.total,
+                pass: res.data.data.pass,
+                fail: res.data.data.fail,
+              },
+              logs: res.data.data.logs,
+            }))
+        )
+      );
+      const results = settledResults.map((result, i) => {
+        if (result.status === 'fulfilled') {
+          return result.value;
+        } else {
+          toast.error(`Failed to fetch results for ${checks[i].id} check`);
+          return null;
+        }
+      });
+      setScanResults(results);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setScanLoading(false);
+    }
+  };
+
+  const handleToggleLogs = () => {
+    setShowLogs((val) => !val);
+  };
+
+  const logs = useMemo(() => {
+    return scanResults
+      .flatMap((result) => result?.logs || [])
+      .sort(
+        (a, b) =>
+          new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+      );
+  }, [scanResults]);
 
   if (orgsLoading) {
     return (
@@ -87,36 +151,6 @@ export default function Dashboard() {
     );
   }
 
-  const selectedOrg = organisations?.[0] || { id: null, name: 'Not selected' };
-
-  const handleRunScan = async () => {
-    setScanLoading(true);
-    try {
-      const settledResults = await Promise.allSettled(
-        checks.map((check) =>
-          axios
-            .get(`${check.url}?orgId=${selectedOrg.id}`, {
-              withCredentials: true,
-            })
-            .then((res) => ({ ...check, data: res.data.data }))
-        )
-      );
-      const results = settledResults.map((result, i) => {
-        if (result.status === 'fulfilled') {
-          return result.value;
-        } else {
-          toast.error(`Failed to fetch results for ${checks[i].id} check`);
-          return null;
-        }
-      });
-      setScanResults(results);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setScanLoading(false);
-    }
-  };
-
   return (
     <div className="py-16 px-4 sm:px-8">
       <Toaster
@@ -136,11 +170,11 @@ export default function Dashboard() {
           },
         }}
       />
-      <header className="mb-12 text-center">
+      <div className="mb-12 text-center">
         <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-100 mb-3">
           Compliance Dashboard ({selectedOrg.name})
         </h1>
-        <p className="text-lg text-slate-600 dark:text-slate-400">
+        <p className="text-lg text-slate-400">
           Instantly check your organization&rsquo;s security and compliance
           posture.
         </p>
@@ -161,21 +195,78 @@ export default function Dashboard() {
         </div>
 
         {scanResults.length > 0 && (
-          <div className="grid gap-8 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 mt-12">
-            {scanResults.map((result) =>
-              result ? (
-                <StatusCard
-                  key={result.id}
-                  title={result.title}
-                  stats={result.data}
-                  icon={result.icon}
-                  description={result.description}
-                />
-              ) : null
-            )}
-          </div>
+          <>
+            <div className="grid gap-8 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 mt-12">
+              {scanResults.map((result) =>
+                result ? (
+                  <StatusCard
+                    key={result.id}
+                    title={result.title}
+                    stats={result.data}
+                    icon={result.icon}
+                    description={result.description}
+                  />
+                ) : null
+              )}
+            </div>
+
+            <div className="mt-12">
+              <button
+                className="flex items-center gap-2 px-4 py-2 rounded-lg border border-indigo-500 bg-indigo-600 text-white font-semibold shadow-sm hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition cursor-pointer"
+                onClick={handleToggleLogs}
+              >
+                {showLogs ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
+                {showLogs ? 'Hide Logs' : 'View Logs'}
+              </button>
+              {showLogs && (
+                <div className="mt-4 bg-slate-900 rounded-lg border border-slate-700 p-4 max-h-64 overflow-y-auto text-xs font-mono text-slate-200">
+                  <ul>
+                    {logs.map((log, idx) => {
+                      // Determine highlight class
+                      let highlight = '';
+                      if (/enabled|passed|success/i.test(log.logline)) {
+                        highlight = 'text-emerald-600 font-semibold';
+                      } else if (/disabled|failed|error/i.test(log.logline)) {
+                        highlight = 'text-rose-600 font-semibold';
+                      } else {
+                        highlight = 'text-slate-200';
+                      }
+                      return (
+                        <li
+                          key={idx}
+                          className={`flex items-start gap-2 px-2 py-1 border-l-4 ${
+                            idx % 2 === 0
+                              ? 'bg-[#23272f] border-indigo-700'
+                              : 'bg-slate-800 border-indigo-800'
+                          }`}
+                        >
+                          <span className="text-[10px] text-slate-400 min-w-[140px] select-none">
+                            {log.timestamp
+                              ? `[${new Date(log.timestamp).toLocaleDateString()} ${new Date(log.timestamp).toLocaleTimeString()}]`
+                              : '[--/--/---- --:--:--]'}
+                          </span>
+                          <span className="text-slate-400 min-w-[50px] select-none text-left">
+                            [{log.logGroup.toUpperCase()}]
+                          </span>
+                          <span
+                            className={`whitespace-pre-wrap break-words ${highlight} text-left`}
+                          >
+                            {log.logline}
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </>
         )}
-      </header>
+      </div>
     </div>
   );
 }
