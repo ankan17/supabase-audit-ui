@@ -1,8 +1,7 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 import { Bot, X } from 'lucide-react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
-import debounce from 'lodash.debounce';
 
 import { API } from '../lib/constants';
 
@@ -23,16 +22,8 @@ export default function ChatWindow() {
   const [typingIdx, setTypingIdx] = useState<number | null>(null);
   const [autoScroll, setAutoScroll] = useState(true);
 
-  // Scroll to bottom when messages change
-  const scrollToBottom = debounce(() => {
+  const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, 60);
-
-  // Clean up debounce on unmount
-  useEffect(() => {
-    return () => {
-      scrollToBottom.cancel();
-    };
   }, []);
 
   // Only keep last 5 messages from each side
@@ -118,12 +109,12 @@ export default function ChatWindow() {
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const el = e.currentTarget;
-    setAutoScroll(el.scrollHeight - el.scrollTop - el.clientHeight < 10);
+    setAutoScroll(el.scrollHeight - el.scrollTop - el.clientHeight < 20);
   };
 
   useEffect(() => {
     if (autoScroll) scrollToBottom();
-  }, [typedText, autoScroll]);
+  }, [typedText, autoScroll, scrollToBottom]);
 
   // Prevent page scroll when mouse is over chat window
   const handleMouseEnter = () => {
