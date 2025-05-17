@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Supabase Audit UI
+
+A modern, responsive frontend for auditing Supabase projects, featuring authentication, compliance checks, and an integrated AI chat assistant (Gemini Pro).
+
+## Features
+- Supabase authentication callback flow
+- Compliance dashboard with real-time checks
+- Beautiful, accessible UI with Tailwind CSS
+- Animated skeleton loaders for cards
+- Floating AI chat window (Gemini Pro)
+- Toast notifications for feedback
+
+## Tech Stack
+- **Next.js (App Router)**
+- **React**
+- **Tailwind CSS**
+- **TypeScript**
+- **react-hot-toast** (notifications)
+- **react-markdown** (AI chat rendering)
+- **axios** (API calls)
 
 ## Getting Started
 
-First, run the development server:
+### 1. Install dependencies
+```sh
+npm install
+# or
+yarn install
+```
 
-```bash
+### 2. Set up environment variables
+Create a `.env.local` file with:
+```
+NEXT_PUBLIC_API_URL=http://localhost:3000/api/v1
+```
+- Adjust the URL to point to your backend API.
+
+### 3. Run the development server
+```sh
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
+- `dev` - Start the development server
+- `build` - Build for production
+- `start` - Start the production server
+- `lint` - Run ESLint
+- `format` - Run Prettier
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## AI Chat Feature
+- Click the chat icon in the bottom right to open the AI chat window.
+- The chat uses the Gemini Pro model via your backend (`/api/v1/chat`).
+- Only the last 5 messages from each side are sent for context.
+- Supports markdown in AI responses and a typing animation.
 
-## Learn More
+## Customization
+- Update theme colors in `tailwind.config.js` and CSS as needed.
+- Adjust the number of skeleton cards or chat history in the code.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+MIT
